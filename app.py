@@ -7,7 +7,7 @@ embeddings = np.load("embeddings.npy")
 
 # Load documents (one document per line)
 with open("documents.txt", "r", encoding="utf-8") as f:
-    documents = [line.strip() for line in f.readlines()]
+    documents = [line.strip() for line in f.readlines() if line.strip()]
 
 def retrieve_top_k(query_embedding, embeddings, documents, k=5):
     sims = cosine_similarity(query_embedding.reshape(1, -1), embeddings)[0]
@@ -25,7 +25,6 @@ if st.button("Search"):
     else:
         # Make a query embedding based on keyword matches in documents
         query_embedding = np.zeros(embeddings.shape[1], dtype=np.float32)
-
         query_words = query.lower().split()
 
         for i, doc in enumerate(documents):
@@ -40,6 +39,7 @@ if st.button("Search"):
 
         results = retrieve_top_k(query_embedding, embeddings, documents, k=k)
 
+        st.success("Search completed ✅")
         st.write(f"### Top {k} Relevant Documents:")
-        for doc, score in results:
-            st.write(f"- {doc} (Score: {score:.4f})")
+        for rank, (doc, score) in enumerate(results, start=1):
+            st.write(f"{rank}. {doc} (Score: {score:.4f})")
