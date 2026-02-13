@@ -39,7 +39,7 @@ if st.button("Search"):
 
         results = retrieve_top_k(query_embedding, embeddings, documents, k=k)
 
-        st.success("Search completed ✅")
+        st.success("Search completed")
         st.write(f"### Top {k} Relevant Documents:")
         for rank, (doc, score) in enumerate(results, start=1):
             st.write(f"{rank}. {doc} (Score: {score:.4f})")
