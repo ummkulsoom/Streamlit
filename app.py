@@ -24,8 +24,21 @@ if st.button("Search"):
     if query.strip() == "":
         st.warning("Please enter a query.")
     else:
-        # Since this lab uses simulated embeddings, we simulate a query embedding too
-        query_embedding = np.random.rand(embeddings.shape[1]).astype(np.float32)
+        # Make a query embedding based on keyword matches in documents 
+        query_embedding = np.zeros(embeddings.shape[1], dtype=np.float32)
+
+        query_words = query.lower().split()
+
+        for i, doc in enumerate(documents):
+            doc_lower = doc.lower()
+            for w in query_words:
+                if w in doc_lower:
+                    query_embedding += embeddings[i]
+
+# If no keywords matched any document, fallback to random (so app still works)
+if np.all(query_embedding == 0):
+    query_embedding = np.random.rand(embeddings.shape[1]).astype(np.float32)
+
 
         results = retrieve_top_k(query_embedding, embeddings, documents, k=k)
 
