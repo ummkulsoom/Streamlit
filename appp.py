@@ -1,0 +1,34 @@
+
+import streamlit as st
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Load precomputed document embeddings
+embeddings = np.load("embeddings.npy")
+
+# Load documents (one document per line)
+with open("documents.txt", "r", encoding="utf-8") as f:
+    documents = [line.strip() for line in f.readlines()]
+
+def retrieve_top_k(query_embedding, embeddings, documents, k=5):
+    sims = cosine_similarity(query_embedding.reshape(1, -1), embeddings)[0]
+    top_k_idx = sims.argsort()[-k:][::-1]
+    return [(documents[i], float(sims[i])) for i in top_k_idx]
+
+st.title("Information Retrieval using Document Embeddings")
+
+query = st.text_input("Enter your query:")
+k = st.slider("Top K results", 1, 10, 5)
+
+if st.button("Search"):
+    if query.strip() == "":
+        st.warning("Please enter a query.")
+    else:
+        # Since this lab uses simulated embeddings, we simulate a query embedding too
+        query_embedding = np.random.rand(embeddings.shape[1]).astype(np.float32)
+
+        results = retrieve_top_k(query_embedding, embeddings, documents, k=k)
+
+        st.write(f"### Top {k} Relevant Documents:")
+        for doc, score in results:
+            st.write(f"- {doc} (Score: {score:.4f})")
