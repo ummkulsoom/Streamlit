@@ -1,4 +1,3 @@
-
 import streamlit as st
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -24,7 +23,7 @@ if st.button("Search"):
     if query.strip() == "":
         st.warning("Please enter a query.")
     else:
-        # Make a query embedding based on keyword matches in documents 
+        # Make a query embedding based on keyword matches in documents
         query_embedding = np.zeros(embeddings.shape[1], dtype=np.float32)
 
         query_words = query.lower().split()
@@ -35,10 +34,9 @@ if st.button("Search"):
                 if w in doc_lower:
                     query_embedding += embeddings[i]
 
-# If no keywords matched any document, fallback to random (so app still works)
-if np.all(query_embedding == 0):
-    query_embedding = np.random.rand(embeddings.shape[1]).astype(np.float32)
-
+        # If no keywords matched any document, fallback to random
+        if np.all(query_embedding == 0):
+            query_embedding = np.random.rand(embeddings.shape[1]).astype(np.float32)
 
         results = retrieve_top_k(query_embedding, embeddings, documents, k=k)
 
